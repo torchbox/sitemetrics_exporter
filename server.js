@@ -16,15 +16,24 @@ app.get('/', (req, res) => {
 	var url = req.query['url'];
 	res.statusCode = 200;
 
-	phantomas(url, { 'timeout': 30 }, (err, data, pres) => {
-		var output = "";
-		var metrics = pres.getMetrics();
+	try {
+		phantomas(url, { 'timeout': 30 }, (err, data, pres) => {
+			if (err) {
+				res.status(500).end("Error: " + err + "\n");
+				return;
+			}
 
-		for (metric in metrics) 
-			output += ("metric_"+snake(metric) + " " + pres.getMetric(metric) + "\n");
+			var output = "";
+			var metrics = pres.getMetrics();
 
-		res.status(200).send(output);
-	});
+			for (metric in metrics) 
+				output += ("metric_"+snake(metric) + " " + pres.getMetric(metric) + "\n");
+
+			res.status(200).send(output);
+		});
+	} catch (e) {
+		res.status(500).end("Error: " + err);
+	}
 });
 
 app.listen(9149, () => {
