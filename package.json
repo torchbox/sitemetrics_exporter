@@ -1,0 +1,9 @@
+{
+	"name": "sitemetrics_exporter",
+	"version": "1.0.0",
+	"dependencies": {
+		"phantomas": "*",
+		"express": "~4.14.0",
+		"to-snake-case": "*"
+	}
+}
