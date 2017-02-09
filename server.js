@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
 		res.end("Missing url parameter.\n");
 		return;
 	}
-		
+
 	var url = req.query['url'];
 	console.log("URL: ["+url+"]");
 	res.statusCode = 200;
@@ -28,14 +28,18 @@ app.get('/', (req, res) => {
 			var output = "";
 			var metrics = pres.getMetrics();
 
-			for (metric in metrics) 
-				if (pres.getMetric(metric))
-					output += ("probe_"+snake(metric)+"_metric" + " " + pres.getMetric(metric) + "\n");
+			for (metric in metrics) {
+				var value = pres.getMetric(metric);
+				// phantomas creates some metrics with commas, which prometheus can't parse.
+				if (value && !value.toString().includes(",")) {
+					output += ("probe_"+snake(metric)+"_metric" + " " + value + "\n");
+				}
+			}
 			output += "probe_success 1\n";
 
 			res.status(200).send(output);
 		});
-	} catch (e) {
+	} catch (err) {
 		res.status(500).end("Error: " + err);
 	}
 });
